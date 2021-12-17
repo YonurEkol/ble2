@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+        android:id="@+id/mainGroup"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@mipmap/ic_home_black_24dp"
+            android:title="Profil" />
+        <item
+            android:id="@+id/nav_showAppointment"
+            android:icon="@mipmap/icon"
+            android:title="Randevuları Listele"/>
+        <item
+            android:id="@+id/nav_bookedAppointment"
+            android:icon="@mipmap/icon"
+            android:title="Randevularım"/>
+        <item
+            android:id="@+id/nav_login"
+            android:icon="@mipmap/login"
+            android:title="Giriş, Üye ol"/>
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@mipmap/logout"
+            android:title="Çıkış Yap"/>
+
+
+        </group>
+
+    <group
+        android:id="@+id/helpGroop"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_setting"
+            android:title="Ayarlar" />
+        <item
+            android:id="@+id/nav_feedback"
+            android:title="Değerlendir"/>
+        <item
+            android:id="@+id/nav_aboutapp"
+            android:title="Hakkımızda" />
+
+    </group>
+</menu>

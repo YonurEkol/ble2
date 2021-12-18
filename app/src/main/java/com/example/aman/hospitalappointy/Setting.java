@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.aman.hospitalappointy.activity.Sdk_lib;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -136,21 +137,21 @@ public class Setting extends AppCompatActivity {
         lvItems = (ListView) findViewById(R.id.lvItems);
         itemsAdapter = new ArrayAdapter<String>(Setting.this, android.R.layout.simple_list_item_1, mListAddress);
 
-        lvItems.setOnClickListener(
-                new View.OnClickListener() {
-                @Override
-                public void onClick(View item) {
-                    
-                    // Remove the item within array at position
-//                    connectDevice(mListData.get(item).getAddress(),mListData.get(item).getName());
+        lvItems.setOnItemLongClickListener(
+                new AdapterView.OnItemLongClickListener() {
+                    @Override
+                    public boolean onItemLongClick(AdapterView<?> adapter,
+                                                   View item, int pos, long id) {
+                        // Remove the item within array at position
+                        connectDevice(mListData.get(pos).getAddress(),mListData.get(pos).getName());
 //                    confirmDevice();
 //                    mListData.get(pos).getAddress();
-    //                        items.remove(pos);
-                    // Refresh the adapter
-    //                        itemsAdapter.notifyDataSetChanged();
-                    // Return true consumes the long click event (marks it handled)
-//                    return true;
-                }
+                        //                        items.remove(pos);
+                        // Refresh the adapter
+                        //                        itemsAdapter.notifyDataSetChanged();
+                        // Return true consumes the long click event (marks it handled)
+                        return true;
+                    }
         });
 
 
@@ -184,6 +185,14 @@ public class Setting extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Sdk_lib sl = new Sdk_lib(mContext);
+                        sl.baslat("HEART_DETECT_START");
+                    }
+                });
 //                mVpoperateManager.startDetectBreath(writeResponse, new IBreathDataListener() {
 //                    @Override
 //                    public void onDataChange(BreathData var1) {
@@ -199,13 +208,13 @@ public class Setting extends AppCompatActivity {
 //                        Logger.t(TAG).i(message);
 //                    }
 //                });
-                mVpoperateManager.startDetectHeart(writeResponse, new IHeartDataListener() {
-                    @Override
-                    public void onDataChange(HeartData var1) {
-                        String message = "kalp durumu" + var1.toString();
-                        Logger.t(TAG).i(message);
-                    }
-                });
+//                mVpoperateManager.startDetectHeart(writeResponse, new IHeartDataListener() {
+//                    @Override
+//                    public void onDataChange(HeartData var1) {
+//                        String message = "kalp durumu" + var1.toString();
+//                        Logger.t(TAG).i(message);
+//                    }
+//                });
 
 //                mVpoperateManager.readAllHealthData(new IAllHealthDataListener() {
 //                    @Override
@@ -241,17 +250,19 @@ public class Setting extends AppCompatActivity {
 //                },3);
 //
 
-                mVpoperateManager.settingDeviceLanguage(writeResponse, new ILanguageDataListener() {
-                    @Override
-                    public void onLanguageDataChange(LanguageData languageData) {
-                        String message = "dil degistir" + languageData.toString();
-                        Logger.t(TAG).i(message);
-                    }
-                }, ELanguage.ENGLISH); //CHINA ENGLISH
+//                sl.startFunction("HEART_DETECT_START");
 
-                Intent intent = new Intent(mContext, OperaterActivity.class);
-                intent.putExtra("isoadmodel", false);
-                intent.putExtra("deviceaddress",  mac_address);
+//                mVpoperateManager.settingDeviceLanguage(writeResponse, new ILanguageDataListener() {
+//                    @Override
+//                    public void onLanguageDataChange(LanguageData languageData) {
+//                        String message = "dil degistir" + languageData.toString();
+//                        Logger.t(TAG).i(message);
+//                    }
+//                }, ELanguage.ENGLISH); //CHINA ENGLISH
+//
+//                Intent intent = new Intent(mContext, OperaterActivity.class);
+//                intent.putExtra("isoadmodel", false);
+//                intent.putExtra("deviceaddress",  mac_address);
                 //startActivity(intent);
 
             }
@@ -263,7 +274,6 @@ public class Setting extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
         mDatabase.child("User_Type").child(currnetUID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -329,7 +339,7 @@ public class Setting extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         getDelegate().onStop();
-        confirmDevice();
+//        confirmDevice();
     }
 
     private final SearchResponse mSearchResponse = new SearchResponse() {
@@ -386,44 +396,55 @@ public class Setting extends AppCompatActivity {
 
     private void connectDevice(final String mac, final String deviceName) {
 
-        mVpoperateManager.registerConnectStatusListener(mac, mBleConnectStatusListener);
-
-        mVpoperateManager.connectDevice(mac, deviceName, new IConnectResponse() {
-
+        runOnUiThread(new Runnable() {
             @Override
-            public void connectState(int code, BleGattProfile profile, boolean isoadModel) {
-                if (code == Code.REQUEST_SUCCESS) {
-                    changeDeviceOnDb(mac, deviceName);
+            public void run() {
 
-                    //蓝牙与设备的连接状态
-                    Logger.t(TAG).i("baglandi");
+                mVpoperateManager.registerConnectStatusListener(mac, mBleConnectStatusListener);
+
+                mVpoperateManager.connectDevice(mac, deviceName, new IConnectResponse() {
+
+                    @Override
+                    public void connectState(int code, BleGattProfile profile, boolean isoadModel) {
+                        if (code == Code.REQUEST_SUCCESS) {
+                            changeDeviceOnDb(mac, deviceName);
+
+                            //蓝牙与设备的连接状态
+                            Logger.t(TAG).i("baglandi");
 //                    Logger.t(TAG).i("是否是固件升级模式=" + isoadModel);
 //                    mIsOadModel = isoadModel;
 //                    isStartConnecting = true;
-                } else {
-                    Logger.t(TAG).i("baglantı yapilamadi");
+                        } else {
+                            changeDeviceOnDb(null, null);
+                            Logger.t(TAG).i("baglantı yapilamadi");
 //                    isStartConnecting = false;
-                }
-            }
-        }, new INotifyResponse() {
-            @Override
-            public void notifyState(int state) {
-                if (state == Code.REQUEST_SUCCESS) {
-                    //蓝牙与设备的连接状态
-                    Logger.t(TAG).i("uyari");
+                        }
+                    }
+                }, new INotifyResponse() {
+                    @Override
+                    public void notifyState(int state) {
+                        if (state == Code.REQUEST_SUCCESS) {
+                            //蓝牙与设备的连接状态
+                            Logger.t(TAG).i("uyari");
 //                    isStartConnecting = true;
 //                    Intent intent = new Intent(mContext, OperaterActivity.class);
 //                    intent.putExtra("isoadmodel", mIsOadModel);
 //                    intent.putExtra("deviceaddress", mac);
 //                    startActivity(intent);
-                } else {
-                    Logger.t(TAG).i("uyari yok");
+                        } else {
+                            Logger.t(TAG).i("uyari yok");
 //                    isStartConnecting = false;
-                }
+                        }
+
+                    }
+                });
 
             }
         });
-        confirmDevice();
+
+
+
+
     }
 
     private final IABleConnectStatusListener mBleConnectStatusListener = new IABleConnectStatusListener() {

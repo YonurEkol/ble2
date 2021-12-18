@@ -244,6 +244,10 @@ public class OperaterActivity extends Activity implements AdapterView.OnItemClic
         }
     };
 
+    public void OperaterActivity(){
+        mContext = getApplicationContext();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -276,14 +280,7 @@ public class OperaterActivity extends Activity implements AdapterView.OnItemClic
         mGridView.setOnItemClickListener(this);
     }
 
-
-    @Override
-    public void onItemClick(final AdapterView<?> parent, View view, int position, long id) {
-        String oprater = mGridData.get(position).get("str");
-        Toast.makeText(mContext, oprater, Toast.LENGTH_SHORT).show();
-        tv1.setText("");
-        tv2.setText("");
-        tv3.setText("");
+    public void startFunction(String oprater){
         if (oprater.equals(HEART_DETECT_START)) {
 //            startListenADC();
             VPOperateManager.getMangerInstance(mContext).startDetectHeart(writeResponse, new IHeartDataListener() {
@@ -2120,7 +2117,16 @@ public class OperaterActivity extends Activity implements AdapterView.OnItemClic
         } else if (oprater.equals(TEXT_ALARM)) {
 //            startActivity(new Intent(this, TextAlarmActivity.class));
         }
+    }
 
+    @Override
+    public void onItemClick(final AdapterView<?> parent, View view, int position, long id) {
+        String oprater = mGridData.get(position).get("str");
+        Toast.makeText(mContext, oprater, Toast.LENGTH_SHORT).show();
+        tv1.setText("");
+        tv2.setText("");
+        tv3.setText("");
+        startFunction(oprater);
     }
 
     private void showToast(String msg) {

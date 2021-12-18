@@ -1,5 +1,6 @@
 package com.example.aman.hospitalappointy;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -17,6 +18,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.aman.hospitalappointy.activity.Sdk_lib;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -27,7 +29,7 @@ import com.google.firebase.database.ValueEventListener;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-
+    Context mContext = MainActivity.this;
     private Toolbar mToolbar;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
@@ -114,6 +116,59 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             Toast.makeText(getBaseContext(),"Your Account is not Logged In ",Toast.LENGTH_LONG).show();
         }else {
+            String currnetUID = mAuth.getCurrentUser().getUid().toString();
+            mUserDatabase.child("User_Type").child(currnetUID).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    String type = dataSnapshot.child("Type").getValue().toString();
+
+                    final String[] name = {""};
+
+                    if(type.equals("Patient")){
+
+                        mUserDatabase.child("Patient_Details").child(currnetUID).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if(dataSnapshot.child("sw_name").getValue() != null && dataSnapshot.child("mac_address").getValue() != null){
+                                    Sdk_lib sl = new Sdk_lib(mContext);
+                                    sl.connectDevice(dataSnapshot.child("mac_address").getValue().toString(), dataSnapshot.child("sw_name").getValue().toString(),"HEART_DETECT_START");
+                                    //sl.baslat("HEART_DETECT_START");
+                                }
+                                //email[0] = dataSnapshot.child("Email").getValue().toString();
+
+                                //mEmail.setText(email[0]);
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
+                    }else if(type.equals("Doctor")){
+
+                        mUserDatabase.child("Doctor_Details").child(currnetUID).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+
             nav_logOut.setVisible(true);
             chechType();
         }
@@ -300,4 +355,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Sdk_lib sl = new Sdk_lib(mContext);
+                sl.baslat("HEART_DETECT_START");
+            }
+        });
+    }
+
 }

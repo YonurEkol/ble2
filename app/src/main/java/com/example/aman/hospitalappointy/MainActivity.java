@@ -44,6 +44,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //Firebase Auth
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();;
     private DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference();
+            //.getReferenceFromUrl("https://pure-coda-174710.firebaseio.com/users");
+
 
 
 
@@ -133,7 +135,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 if(dataSnapshot.child("sw_name").getValue() != null && dataSnapshot.child("mac_address").getValue() != null){
                                     Sdk_lib sl = new Sdk_lib(mContext);
                                     sl.connectDevice(dataSnapshot.child("mac_address").getValue().toString(), dataSnapshot.child("sw_name").getValue().toString(),"HEART_DETECT_START");
+                                    sl.baslat("FATIGUE_OPEN");
                                     //sl.baslat("HEART_DETECT_START");
+                                    //sl.baslat("LIANSUO_SOS");
                                 }
                                 //email[0] = dataSnapshot.child("Email").getValue().toString();
 

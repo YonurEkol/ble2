@@ -1,6 +1,8 @@
 package com.example.aman.hospitalappointy.activity;
 
+import static com.example.aman.hospitalappointy.activity.Oprate.FATIGUE_OPEN;
 import static com.example.aman.hospitalappointy.activity.Oprate.HEART_DETECT_START;
+import static com.example.aman.hospitalappointy.activity.Oprate.LIANSUO_SOS;
 
 import android.content.Context;
 import android.widget.Button;
@@ -20,9 +22,12 @@ import com.veepoo.protocol.listener.base.IConnectResponse;
 import com.veepoo.protocol.listener.base.INotifyResponse;
 import com.veepoo.protocol.listener.data.ICustomSettingDataListener;
 import com.veepoo.protocol.listener.data.IDeviceFuctionDataListener;
+import com.veepoo.protocol.listener.data.IFatigueDataListener;
 import com.veepoo.protocol.listener.data.IHeartDataListener;
 import com.veepoo.protocol.listener.data.IPwdDataListener;
+import com.veepoo.protocol.listener.data.ISOSListener;
 import com.veepoo.protocol.listener.data.ISocialMsgDataListener;
+import com.veepoo.protocol.model.datas.FatigueData;
 import com.veepoo.protocol.model.datas.FunctionDeviceSupportData;
 import com.veepoo.protocol.model.datas.FunctionSocailMsgData;
 import com.veepoo.protocol.model.datas.HeartData;
@@ -78,6 +83,23 @@ public class Sdk_lib {
 //                    Logger.i(message);
                 }
             });
+        }else if (oprater.equals(FATIGUE_OPEN)) {
+            mVpoperateManager.startDetectFatigue(writeResponse, new IFatigueDataListener() {
+                @Override
+                public void onFatigueDataListener(FatigueData fatigueData) {
+                    String message = "疲劳度-开始:\n" + fatigueData.toString();
+                    Logger.i(message);
+                }
+            });
+        } else if (oprater.equals(LIANSUO_SOS)) {
+            String message = "LIANSUO_SOS";
+            mVpoperateManager.settingSOSListener(new ISOSListener() {
+                @Override
+                public void sos() {
+                    String liansuo_sos_call_back = "liansuo_sos call back";
+                    Logger.i(liansuo_sos_call_back);
+                }
+            });
         }
     }
     public boolean baslat(String oprater) {
@@ -122,7 +144,7 @@ public class Sdk_lib {
                 @Override
                 public void connectState(int code, BleGattProfile profile, boolean isoadModel) {
                     if (code == Code.REQUEST_SUCCESS) {
-                        baslat(oprater);
+
                         Logger.i("baglandi");
                     } else {
                         Logger.i("baglantı yapilamadi");
@@ -132,7 +154,7 @@ public class Sdk_lib {
                 @Override
                 public void notifyState(int state) {
                     if (state == Code.REQUEST_SUCCESS) {
-
+                        baslat(oprater);
                         Logger.i("uyari");
 
                     } else {

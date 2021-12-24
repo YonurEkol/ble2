@@ -73,12 +73,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
         notifyThis("asd","asdcas");
 
-        Intent intent = new Intent(getApplicationContext(),service.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent);
-        } else {
-            startService(intent);
-        }
+
 
         // Open bluetooth
         if (!BluetoothUtils.isBluetoothEnabled()) {
@@ -90,6 +85,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if(!provider.contains("gps")){ //if gps is disabled
             intent1 = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
             startActivity(intent1);
+        }
+
+        Intent intent = new Intent(getApplicationContext(),service.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent);
+        } else {
+            startService(intent);
         }
 //        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
 //        Uri uri = Uri.fromParts("package", getPackageName(), null);
@@ -231,11 +233,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             chechType();
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Logger.i("Starting the service in >=26 Mode");
-            startForegroundService(new Intent(MainActivity.this,Sdk_lib.class));
-//            return;
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            Logger.i("Starting the service in >=26 Mode");
+//            startForegroundService(new Intent(MainActivity.this,Sdk_lib.class));
+////            return;
+//        }
 
     }
 

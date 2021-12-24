@@ -3,7 +3,26 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/esra.eryigit/OneDrive/Code/BLE2New/app/src/main/res/layout/activity_doctor__edit_profile.xml" value="0.22083333333333333" />
+        <entry key="..\:/Users/esra.eryigit/OneDrive/Code/BLE2New/app/src/main/res/layout/activity_doctor__profile.xml" value="0.22083333333333333" />
+        <entry key="..\:/Users/esra.eryigit/OneDrive/Code/BLE2New/app/src/main/res/layout/activity_doctor__show_appointment.xml" value="0.22083333333333333" />
+        <entry key="..\:/Users/esra.eryigit/OneDrive/Code/BLE2New/app/src/main/res/layout/activity_feedback.xml" value="0.22083333333333333" />
+        <entry key="..\:/Users/esra.eryigit/OneDrive/Code/BLE2New/app/src/main/res/layout/activity_forgot__password.xml" value="0.22083333333333333" />
+        <entry key="..\:/Users/esra.eryigit/OneDrive/Code/BLE2New/app/src/main/res/layout/activity_login.xml" value="0.22083333333333333" />
+        <entry key="..\:/Users/esra.eryigit/OneDrive/Code/BLE2New/app/src/main/res/layout/activity_main.xml" value="0.22083333333333333" />
         <entry key="..\:/Users/esra.eryigit/OneDrive/Code/BLE2New/app/src/main/res/layout/activity_operate.xml" value="0.17916666666666667" />
+        <entry key="..\:/Users/esra.eryigit/OneDrive/Code/BLE2New/app/src/main/res/layout/activity_patient__book_appointment.xml" value="0.22083333333333333" />
+        <entry key="..\:/Users/esra.eryigit/OneDrive/Code/BLE2New/app/src/main/res/layout/activity_patient__doctor_profile.xml" value="0.22083333333333333" />
+        <entry key="..\:/Users/esra.eryigit/OneDrive/Code/BLE2New/app/src/main/res/layout/activity_patient__registration.xml" value="0.22083333333333333" />
+        <entry key="..\:/Users/esra.eryigit/OneDrive/Code/BLE2New/app/src/main/res/layout/activity_patient__show_booked_appointment.xml" value="0.22083333333333333" />
+        <entry key="..\:/Users/esra.eryigit/OneDrive/Code/BLE2New/app/src/main/res/layout/activity_splash_screen.xml" value="0.22083333333333333" />
+        <entry key="..\:/Users/esra.eryigit/OneDrive/Code/BLE2New/app/src/main/res/layout/app_bar_layout.xml" value="0.22083333333333333" />
+        <entry key="..\:/Users/esra.eryigit/OneDrive/Code/BLE2New/app/src/main/res/layout/doctor_list_dialog.xml" value="0.22083333333333333" />
+        <entry key="..\:/Users/esra.eryigit/OneDrive/Code/BLE2New/app/src/main/res/layout/doctorlist_item_layout.xml" value="0.22083333333333333" />
+        <entry key="..\:/Users/esra.eryigit/OneDrive/Code/BLE2New/app/src/main/res/layout/fragment_date.xml" value="0.22083333333333333" />
+        <entry key="..\:/Users/esra.eryigit/OneDrive/Code/BLE2New/app/src/main/res/layout/fragment_doctor.xml" value="0.22083333333333333" />
+        <entry key="..\:/Users/esra.eryigit/OneDrive/Code/BLE2New/app/src/main/res/layout/fragment_specialization.xml" value="0.22083333333333333" />
+        <entry key="..\:/Users/esra.eryigit/OneDrive/Code/BLE2New/app/src/main/res/layout/header_menu.xml" value="0.22083333333333333" />
         <entry key="..\:/Users/esra.eryigit/OneDrive/Code/Hospital-Appointy-Android/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.24479166666666666" />
         <entry key="..\:/Users/esra.eryigit/OneDrive/Code/Hospital-Appointy-Android/app/src/main/res/drawable/about_icon.xml" value="0.24479166666666666" />
         <entry key="..\:/Users/esra.eryigit/OneDrive/Code/Hospital-Appointy-Android/app/src/main/res/drawable/button_background.xml" value="0.24479166666666666" />

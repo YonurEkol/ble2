@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 //apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 32
     defaultConfig {
         applicationId "com.example.aman.hospitalappointy"
         minSdkVersion 22

@@ -5,12 +5,18 @@ import static com.example.aman.hospitalappointy.activity.Oprate.HEART_DETECT_STA
 import static com.example.aman.hospitalappointy.activity.Oprate.LIANSUO_SOS;
 
 import android.content.Context;
+import android.support.v7.widget.Toolbar;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.aman.hospitalappointy.MainActivity;
+import com.example.aman.hospitalappointy.R;
 import com.example.aman.hospitalappointy.Setting;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.inuker.bluetooth.library.Code;
 import com.inuker.bluetooth.library.Constants;
 import com.inuker.bluetooth.library.model.BleGattProfile;
@@ -38,6 +44,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Sdk_lib {
     Context mContext;
+    public TextView heartStatus;
     public VPOperateManager mVpoperateManager;
     Sdk_lib.WriteResponse writeResponse = new Sdk_lib.WriteResponse();
     ISocialMsgDataListener socialMsgDataListener = new ISocialMsgDataListener() {
@@ -55,9 +62,9 @@ public class Sdk_lib {
     };
 
     public Sdk_lib(Context mContext) {
+        FirebaseDatabase.getInstance().getReference().child("Patient_Details").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()).child("status").setValue("Sdkda Basladi");
+
         mVpoperateManager = mVpoperateManager.getMangerInstance(mContext.getApplicationContext());
-
-
     }
 
     public void startFunction(String oprater) {
@@ -78,6 +85,11 @@ public class Sdk_lib {
                         }
                         Logger.i(message);
                     } else if (heart.getHeartStatus().toString() == "STATE_HEART_NORMAL"){
+                        try{
+                            heartStatus.setText(String.valueOf(heart.getData()));
+                        }catch(Exception e){
+                        }
+//                        heart_status
                         Logger.i(message);
                     }
 //                    Logger.i(message);
@@ -164,6 +176,7 @@ public class Sdk_lib {
                 }
             });
 
+
     }
 
     private final IABleConnectStatusListener mBleConnectStatusListener = new IABleConnectStatusListener() {
@@ -176,5 +189,6 @@ public class Sdk_lib {
             }
         }
     };
+
 
 }

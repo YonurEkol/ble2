@@ -1,10 +1,21 @@
 package com.example.aman.hospitalappointy;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.Service;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.location.LocationManager;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -26,11 +37,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.inuker.bluetooth.library.utils.BluetoothUtils;
+import com.orhanobut.logger.Logger;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     Context mContext = MainActivity.this;
     private Toolbar mToolbar;
+    TextView heartStatus;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     private NavigationView mNavigationView;
@@ -46,13 +60,43 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference();
             //.getReferenceFromUrl("https://pure-coda-174710.firebaseio.com/users");
 
+    LocationManager lm;
+    Intent intent1;
 
-
+    public String sw_name;
+    public String mac_address;
+    private Handler mainHandler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        notifyThis("asd","asdcas");
+
+        Intent intent = new Intent(getApplicationContext(),service.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent);
+        } else {
+            startService(intent);
+        }
+
+        // Open bluetooth
+        if (!BluetoothUtils.isBluetoothEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, 1);
+        }
+        // Control gps and if not open go to setting panel
+        String provider = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+        if(!provider.contains("gps")){ //if gps is disabled
+            intent1 = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+            startActivity(intent1);
+        }
+//        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+//        Uri uri = Uri.fromParts("package", getPackageName(), null);
+//        intent.setData(uri);
+//        startActivity(intent);
+
+
 
         //Toolbar
         mToolbar = (Toolbar) findViewById(R.id.main_toolbar);
@@ -77,6 +121,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         mTabLayout = (TabLayout) findViewById(R.id.main_tabLayout);
         mTabLayout.setupWithViewPager(mViewPager);
+        View mView = mNavigationView.getHeaderView(0);
+        heartStatus = (TextView) mView.findViewById(R.id.heart_status);
+        heartStatus.setText("0");
 
     }
 
@@ -104,14 +151,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         nav_feedback.setVisible(false);
 
 
+        View mView = mNavigationView.getHeaderView(0);
 
         // Check if user is signed in  or not
         if(currentUser == null){
             nav_logIn.setVisible(true);
 
-            View mView = mNavigationView.getHeaderView(0);
             TextView userName = (TextView) mView.findViewById(R.id.header_userName);
             TextView userEmail = (TextView) mView.findViewById(R.id.header_userEmail);
+
 
             userName.setText("User Name");
             userEmail.setText("User Email");
@@ -119,6 +167,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Toast.makeText(getBaseContext(),"Your Account is not Logged In ",Toast.LENGTH_LONG).show();
         }else {
             String currnetUID = mAuth.getCurrentUser().getUid().toString();
+            //sw_name =  mUserDatabase.child("Patient_Details").child(currnetUID).child("sw_name").getValue().toString();
             mUserDatabase.child("User_Type").child(currnetUID).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -133,9 +182,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 if(dataSnapshot.child("sw_name").getValue() != null && dataSnapshot.child("mac_address").getValue() != null){
-                                    Sdk_lib sl = new Sdk_lib(mContext);
-                                    sl.connectDevice(dataSnapshot.child("mac_address").getValue().toString(), dataSnapshot.child("sw_name").getValue().toString(),"HEART_DETECT_START");
-                                    sl.baslat("FATIGUE_OPEN");
+                                    sw_name =  dataSnapshot.child("sw_name").getValue().toString();
+                                    mac_address =  dataSnapshot.child("mac_address").getValue().toString();
+                                    RunOnBack rr = new RunOnBack();
+                                    new Thread(rr).start();
+//                                    Sdk_lib sl = new Sdk_lib(mContext);
+//                                    sl.heartStatus = heartStatus;
+//                                    sl.connectDevice(dataSnapshot.child("mac_address").getValue().toString(), dataSnapshot.child("sw_name").getValue().toString(),"HEART_DETECT_START");
+//                                    sl.baslat("FATIGUE_OPEN");
                                     //sl.baslat("HEART_DETECT_START");
                                     //sl.baslat("LIANSUO_SOS");
                                 }
@@ -176,6 +230,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             nav_logOut.setVisible(true);
             chechType();
         }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Logger.i("Starting the service in >=26 Mode");
+            startForegroundService(new Intent(MainActivity.this,Sdk_lib.class));
+//            return;
+        }
+
     }
 
     private void chechType() {
@@ -364,13 +425,89 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onDestroy() {
         super.onDestroy();
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Sdk_lib sl = new Sdk_lib(mContext);
-                sl.baslat("HEART_DETECT_START");
-            }
-        });
+//        RunOnBack rr = new RunOnBack();
+//        new Thread(rr).start();
     }
+
+    @Override
+    protected void onStop() {
+        // call the superclass method first
+        super.onStop();
+
+//        rr.run();
+//        runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                Sdk_lib sl = new Sdk_lib(mContext);
+//                sl.connectDevice(mac_address, sw_name,"HEART_DETECT_START");
+//
+////                sl.baslat("HEART_DETECT_START");
+//            }
+//        });
+    }
+
+//    @Override
+//    public void onTaskRemoved(Intent rootIntent) {
+//        super.onTaskRemoved();
+//    }
+
+    class RunOnBack implements Runnable{
+
+        @Override
+        public void run(){
+            Handler threadHandler = new Handler(Looper.getMainLooper());
+            threadHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(mContext, "Toast calisiyor", Toast.LENGTH_LONG).show();
+//                    NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext);
+//                    builder
+//                            .setContentTitle("Title")
+//                            .setContentText("content")
+//                            .setSmallIcon(R.mipmap.ic_launcher)
+//                            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+
+//                    Sdk_lib sl = new Sdk_lib(mContext);
+//                    sl.connectDevice(mac_address, sw_name,"HEART_DETECT_START");
+
+
+                }
+            });
+
+//            Sdk_lib sl = new Sdk_lib(mContext);
+//            sl.connectDevice(mac_address, sw_name,"HEART_DETECT_START");
+//            for ( int i = 0; i < 100; i++) {
+//                Logger.i( "startThread: " + i);
+//
+//                mainHandler.post(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        heartStatus.setText(" bir seyler oldu" );
+//                    }
+//                });
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+        }
+    }
+    public void notifyThis(String title, String message) {
+
+        NotificationCompat.Builder b = new NotificationCompat.Builder(this,"M_CH_ID");
+        b.setAutoCancel(true)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setWhen(System.currentTimeMillis())
+                .setSmallIcon(R.drawable.about_icon)
+                .setTicker("{your tiny message}")
+                .setContentTitle(title)
+                .setContentText(message)
+                .setContentInfo("INFO");
+
+        NotificationManager nm = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        nm.notify(1, b.build());
+    }
+
 
 }

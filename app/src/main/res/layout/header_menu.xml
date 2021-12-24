@@ -47,6 +47,17 @@
                 android:layout_gravity="center"
                 />
 
+            <TextView
+                android:id="@+id/heart_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="User Email"
+                android:textColor="#fff"
+                android:textSize="15dp"
+
+                />
+
         </LinearLayout>
 
     </LinearLayout>

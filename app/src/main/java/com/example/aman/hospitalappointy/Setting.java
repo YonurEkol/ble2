@@ -125,6 +125,10 @@ public class Setting extends AppCompatActivity {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, 1);
         }
+
+        Intent intent = new Intent(getApplicationContext(),service.class);
+        stopService(intent);
+
         currnetUID = mAuth.getCurrentUser().getUid().toString();
         mVpoperateManager = mVpoperateManager.getMangerInstance(mContext.getApplicationContext());
         mName = (TextView) findViewById(R.id.feedback_name);

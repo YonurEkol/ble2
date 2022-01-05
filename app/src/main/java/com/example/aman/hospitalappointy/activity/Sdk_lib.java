@@ -40,6 +40,9 @@ import com.veepoo.protocol.model.datas.HeartData;
 import com.veepoo.protocol.model.datas.PwdData;
 import com.veepoo.protocol.model.settings.CustomSettingData;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 
@@ -71,7 +74,7 @@ public class Sdk_lib {
     public Sdk_lib(Context mContext) {
 
         mDatabase.child("Patient_Details").child(currnetUID).child("status").setValue("Sdkda Basladi");
-        //FirebaseDatabase.getInstance().getReference().child("Patient_Details").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()).child("status").setValue("Sdkda Basladi");
+//        FirebaseDatabase.getInstance().getReference().child("Patient_Details").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()).child("status").setValue("Sdkda Basladi");
 
         mVpoperateManager = mVpoperateManager.getMangerInstance(mContext.getApplicationContext());
     }
@@ -95,9 +98,13 @@ public class Sdk_lib {
                         Logger.i(message);
                     } else if (heart.getHeartStatus().toString() == "STATE_HEART_NORMAL"){
                         try{
-
-                            mDatabase.child("Patient_Data").child(currnetUID).child("heart_detect").child(String.valueOf(Calendar.getInstance().getTime())).setValue(heart.getData());
-                            heartStatus.setText(String.valueOf(heart.getData()));
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                                LocalDateTime ltime = LocalDateTime.now();
+                                String date = ltime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+                                String time = ltime.format(DateTimeFormatter.ofPattern("H:m:s"));
+                                mDatabase.child("Patient_Data").child(currnetUID).child("heart_detect").child(date).child(time).setValue(heart.getData());
+                            }
+//                            heartStatus.setText(String.valueOf(heart.getData()));
                         }catch(Exception e){
                         }
 //                        heart_status

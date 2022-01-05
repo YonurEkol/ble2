@@ -40,6 +40,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.inuker.bluetooth.library.utils.BluetoothUtils;
 import com.orhanobut.logger.Logger;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     Context mContext = MainActivity.this;
@@ -71,9 +75,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        notifyThis("asd","asdcas");
 
 
+//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+//            LocalDate localDatex = LocalDate.now();
+//            LocalDateTime localDate = LocalDateTime.now();
+//            localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+//            notifyThis("asd","asdcas");
+//        }
 
         // Open bluetooth
         if (!BluetoothUtils.isBluetoothEnabled()) {

@@ -66,6 +66,7 @@ dependencies {
 
 //    implementation 'com.github.iielse:switchbutton:1.0.4'
     implementation 'com.orhanobut:logger:1.15'
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
 }
 
 

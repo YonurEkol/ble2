@@ -3,6 +3,7 @@ package com.example.aman.hospitalappointy;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,9 +18,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,6 +33,22 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+
+
+
+
+import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.utils.ColorTemplate;
+import com.orhanobut.logger.Logger;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+
 
 /**
  * Created by Aman on 14-Feb-18.
@@ -41,6 +62,8 @@ public class Fragment_Specialization extends Fragment {
     private RecyclerView mRecylerView;
 
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    View rootView;
 
     public Fragment_Specialization(){
         //Required Empty public constructor otherwise app will crash
@@ -50,7 +73,7 @@ public class Fragment_Specialization extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
 
-        final View rootView = inflater.inflate(R.layout.fragment_specialization,container,false);
+       rootView = inflater.inflate(R.layout.fragment_specialization,container,false);
 
         mSearch = (TextInputLayout) rootView.findViewById(R.id.search_by_specialization);
         searchtext = (EditText) rootView.findViewById(R.id.special_searchtxt);
@@ -75,9 +98,87 @@ public class Fragment_Specialization extends Fragment {
         mRecylerView = (RecyclerView) rootView.findViewById(R.id.specialization_recyclerView);
         mRecylerView.setHasFixedSize(true);
         mRecylerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
-
+        if(mAuth.getCurrentUser() != null) {
+            getDataSet();
+        }
         return rootView;
     }
+
+    private ArrayList getDataSet() {
+        final ArrayList[] dataSets = {null};
+        ArrayList valueSet1 = new ArrayList();
+        BarEntry v1e1 = new BarEntry(0, 0); // Jan
+        valueSet1.add(v1e1);
+        final int[] num = {0};
+        String date;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            LocalDateTime ltime = LocalDateTime.now();
+             date = ltime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        }else {
+            date = "2021-12-28";
+        }
+        Query myTopPostsQuery = mDatabase.child("Patient_Data").child(mAuth.getCurrentUser().getUid().toString()).child("heart_detect").child(date).limitToFirst(10);
+        myTopPostsQuery.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                float f = Float.parseFloat(dataSnapshot.getValue().toString());
+                BarEntry v1e1 = new BarEntry(num[0], f ); // Jan
+                num[0] += 1;
+                valueSet1.add(v1e1);
+                BarDataSet barDataSet1 = new BarDataSet(valueSet1, "Brand 1");
+                dataSets[0] = new ArrayList();
+                dataSets[0].add(barDataSet1);
+                BarChart chart = (BarChart) rootView.findViewById(R.id.chart);
+                BarData data = new BarData(dataSets[0]);//, getDataSet()
+                chart.setData(data);
+                chart.animateXY(2000, 2000);
+                chart.invalidate();
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                Logger.i(s);
+                float f = Float.parseFloat(dataSnapshot.getValue().toString());
+                BarEntry v1e1 = new BarEntry(1, f ); // Jan
+                valueSet1.add(v1e1);
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+            // TODO: implement the ChildEventListener methods as documented above
+            // ...
+        });
+        BarDataSet barDataSet1 = new BarDataSet(valueSet1, "Brand 1");
+        dataSets[0] = new ArrayList();
+        dataSets[0].add(barDataSet1);
+
+        return dataSets[0];
+    }
+
+    private ArrayList getXAxisValues() {
+        ArrayList xAxis = new ArrayList();
+        xAxis.add("JAN");
+        xAxis.add("FEB");
+        xAxis.add("MAR");
+        xAxis.add("APR");
+        xAxis.add("MAY");
+        xAxis.add("JUN");
+        return xAxis;
+    }
+
+
 
     @Override
     public void onStart() {

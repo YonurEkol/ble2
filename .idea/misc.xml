@@ -71,6 +71,10 @@
         <entry key="..\:/Users/esra.eryigit/OneDrive/Code/Hospital-Appointy-Android/app/src/main/res/layout/udate_dialog.xml" value="0.22864583333333333" />
         <entry key="..\:/Users/esra.eryigit/OneDrive/Code/Hospital-Appointy-Android/app/src/main/res/layout/verify_email.xml" value="0.22864583333333333" />
         <entry key="..\:/Users/esra.eryigit/OneDrive/Code/Hospital-Appointy-Android/app/src/main/res/menu/menu_navigation.xml" value="0.22864583333333333" />
+        <entry key="..\:/Users/yakup.onur/OneDrive/Code/BLE2New/app/src/main/res/layout/activity_main.xml" value="0.215625" />
+        <entry key="..\:/Users/yakup.onur/OneDrive/Code/BLE2New/app/src/main/res/layout/activity_operate.xml" value="0.215625" />
+        <entry key="..\:/Users/yakup.onur/OneDrive/Code/BLE2New/app/src/main/res/layout/activity_patient__book_appointment.xml" value="0.24479166666666666" />
+        <entry key="..\:/Users/yakup.onur/OneDrive/Code/BLE2New/app/src/main/res/layout/chart.xml" value="0.215625" />
       </map>
     </option>
   </component>
@@ -118,7 +122,7 @@
       </value>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

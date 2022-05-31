@@ -8,10 +8,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
-import android.support.v4.app.NotificationCompat;
+import androidx.core.app.NotificationCompat;
 import android.widget.Toast;
 
 import com.example.aman.hospitalappointy.activity.Sdk_lib;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class service extends Service {
     private static final String TAG = "MyService";
@@ -65,7 +66,7 @@ public class service extends Service {
         //intents.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 //        startActivity(intents);
         Toast.makeText(this, "start kısmında", Toast.LENGTH_LONG).show();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (FirebaseAuth.getInstance().getCurrentUser() !=null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Sdk_lib sl = new Sdk_lib(this);
             sl.connectDevice("DC:BB:2C:A7:A1:65", "SW12","HEART_DETECT_START");
             startForegroundService(intents);

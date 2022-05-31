@@ -6,7 +6,7 @@ import com.example.aman.hospitalappointy.activity.OperaterActivity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -34,16 +34,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.recyclerview.widget.RecyclerView;
 import com.example.aman.hospitalappointy.adapter.BleScanViewAdapter;
 import com.example.aman.hospitalappointy.adapter.DividerItemDecoration;
 import com.veepoo.protocol.listener.base.IABleConnectStatusListener;
 import com.veepoo.protocol.listener.base.IConnectResponse;
 import com.veepoo.protocol.listener.base.INotifyResponse;
 
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -72,6 +72,10 @@ import com.veepoo.protocol.model.datas.TemptureDetectData;
 import com.veepoo.protocol.model.enums.EFunctionStatus;
 import com.veepoo.protocol.model.enums.ELanguage;
 import com.veepoo.protocol.model.settings.CustomSettingData;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import android.content.pm.PackageManager;
 
 public class Setting extends AppCompatActivity {
     Context mContext = Setting.this;
@@ -126,10 +130,33 @@ public class Setting extends AppCompatActivity {
             startActivityForResult(enableBtIntent, 1);
         }
 
+        if (ContextCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    android.Manifest.permission.ACCESS_FINE_LOCATION)){
+                ActivityCompat.requestPermissions(this,
+                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            }else{
+                ActivityCompat.requestPermissions(this,
+                        new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            }
+        }
+
+//        ActivityCompat.requestPermissions(
+//                this,
+//                arrayOf(
+//                        Manifest.permission.ACCESS_COARSE_LOCATION,
+//                        ),
+//                99
+//        );
+
         Intent intent = new Intent(getApplicationContext(),service.class);
         stopService(intent);
-
-        currnetUID = mAuth.getCurrentUser().getUid().toString();
+        if (mAuth.getCurrentUser()!= null) {
+            currnetUID = mAuth.getCurrentUser().getUid().toString();
+        } else {
+            currnetUID = null;
+        }
         mVpoperateManager = mVpoperateManager.getMangerInstance(mContext.getApplicationContext());
         mName = (TextView) findViewById(R.id.feedback_name);
         //mEmail = (TextView) findViewById(R.id.feedback_email);
@@ -169,7 +196,7 @@ public class Setting extends AppCompatActivity {
             public void onClick(View v) {
                 mVpoperateManager.getMangerInstance(mContext.getApplicationContext()).startScanDevice(mSearchResponse);
 
-//                mVpoperateManager.startScanDevice(mSearchResponse);
+               mVpoperateManager.startScanDevice(mSearchResponse);
 
                 //String feedback = mFeedbackText.getText().toString();
                 //mDatabase.child("Feedback").child(mAuth.getCurrentUser().getUid()).push().child("Feedback").setValue(feedback);
@@ -278,66 +305,68 @@ public class Setting extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        mDatabase.child("User_Type").child(currnetUID).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+        if(currnetUID !=null){
+            mDatabase.child("User_Type").child(currnetUID).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
 
-                String type = dataSnapshot.child("Type").getValue().toString();
+                    String type = dataSnapshot.child("Type").getValue().toString();
 
-                final String[] name = {""};
+                    final String[] name = {""};
 
-                if(type.equals("Patient")){
+                    if(type.equals("Patient")){
 
-                    mDatabase.child("Patient_Details").child(currnetUID).addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            if(dataSnapshot.child("sw_name").getValue() != null && dataSnapshot.child("mac_address").getValue() != null){
-                                connectDevice(dataSnapshot.child("mac_address").getValue().toString(), dataSnapshot.child("sw_name").getValue().toString());
-                                name[0] = dataSnapshot.child("sw_name").getValue().toString();
-                                mac_address = dataSnapshot.child("mac_address").getValue().toString();
+                        mDatabase.child("Patient_Details").child(currnetUID).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if(dataSnapshot.child("sw_name").getValue() != null && dataSnapshot.child("mac_address").getValue() != null){
+                                    connectDevice(dataSnapshot.child("mac_address").getValue().toString(), dataSnapshot.child("sw_name").getValue().toString());
+                                    name[0] = dataSnapshot.child("sw_name").getValue().toString();
+                                    mac_address = dataSnapshot.child("mac_address").getValue().toString();
+
+                                    mName.setText(name[0]);
+                                } else {
+                                    mName.setText("Bağlantı yok!");
+                                }
+                                //email[0] = dataSnapshot.child("Email").getValue().toString();
+
+                                //mEmail.setText(email[0]);
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
+                    }else if(type.equals("Doctor")){
+
+                        mDatabase.child("Doctor_Details").child(currnetUID).addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                name[0] = dataSnapshot.child("Name").getValue().toString();
+                                //email[0] = dataSnapshot.child("Email").getValue().toString();
 
                                 mName.setText(name[0]);
-                            } else {
-                                mName.setText("Bağlantı yok!");
+                               // mEmail.setText(email[0]);
                             }
-                            //email[0] = dataSnapshot.child("Email").getValue().toString();
 
-                            //mEmail.setText(email[0]);
-                        }
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
+                            }
+                        });
+                    }else {
 
-                        }
-                    });
+                    }
+                }
 
-                }else if(type.equals("Doctor")){
-
-                    mDatabase.child("Doctor_Details").child(currnetUID).addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            name[0] = dataSnapshot.child("Name").getValue().toString();
-                            //email[0] = dataSnapshot.child("Email").getValue().toString();
-
-                            mName.setText(name[0]);
-                           // mEmail.setText(email[0]);
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
-                }else {
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
                 }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+            });
+        }
     }
     @Override
     protected void onStop() {

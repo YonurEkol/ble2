@@ -5,12 +5,12 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.textfield.TextInputLayout;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -192,7 +192,7 @@ public class Fragment_Specialization extends Fragment {
         FirebaseRecyclerOptions<BookedAppointmentList> firebaseRecyclerOptions = new FirebaseRecyclerOptions.Builder<BookedAppointmentList>()
                 .setQuery(query, BookedAppointmentList.class)
                 .build();
-
+        /*
         FirebaseRecyclerAdapter<BookedAppointmentList,SpecializationViewHolder> firebaseRecyclerAdapter =
                 new FirebaseRecyclerAdapter<BookedAppointmentList, SpecializationViewHolder>(firebaseRecyclerOptions) {
                     @Override
@@ -233,7 +233,7 @@ public class Fragment_Specialization extends Fragment {
                     }
                 };
         mRecylerView.setAdapter(firebaseRecyclerAdapter);
-        firebaseRecyclerAdapter.startListening();
+        firebaseRecyclerAdapter.startListening();*/
 
     }
 
@@ -254,7 +254,7 @@ public class Fragment_Specialization extends Fragment {
         FirebaseRecyclerOptions<BookedAppointmentList> firebaseRecyclerOptions = new FirebaseRecyclerOptions.Builder<BookedAppointmentList>()
                 .setQuery(query, BookedAppointmentList.class)
                 .build();
-
+        /*
         FirebaseRecyclerAdapter<BookedAppointmentList, SpecializationVH> firebaseRecyclerAdapter =
                 new FirebaseRecyclerAdapter<BookedAppointmentList, SpecializationVH>(firebaseRecyclerOptions) {
                     @Override
@@ -309,7 +309,7 @@ public class Fragment_Specialization extends Fragment {
 
         AlertDialog dialog = builder.create();
         dialog.setCanceledOnTouchOutside(true);
-        dialog.show();
+        dialog.show();*/
 
 //        Window window = dialog.getWindow();
 //        window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);

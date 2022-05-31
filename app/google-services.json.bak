@@ -1,7 +1,7 @@
 {
   "project_info": {
     "project_number": "1084092657625",
-    "firebase_url": "https://ekolswapp-default-rtdb.europe-west1.firebasedatabase.app",
+    "firebase_url": "https://ekolswapp-default-rtdb.europe-west1.firebasedatabase.app/",
     "project_id": "ekolswapp",
     "storage_bucket": "ekolswapp.appspot.com"
   },

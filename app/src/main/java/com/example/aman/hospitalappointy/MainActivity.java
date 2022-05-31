@@ -1,35 +1,37 @@
 package com.example.aman.hospitalappointy;
 
-import android.app.Notification;
+import android.app.Activity;
 import android.app.NotificationManager;
-import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.tabs.TabLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.viewpager.widget.ViewPager;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.aman.hospitalappointy.activity.Sdk_lib;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -38,12 +40,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.inuker.bluetooth.library.utils.BluetoothUtils;
-import com.orhanobut.logger.Logger;
+import com.google.auth.oauth2.GoogleCredentials;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     Context mContext = MainActivity.this;
@@ -60,7 +59,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Fragment_SectionPagerAdapter mFragment_SectionPagerAdapter;
 
     //Firebase Auth
-    private FirebaseAuth mAuth = FirebaseAuth.getInstance();;
+
+
+
+
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private DatabaseReference mUserDatabase = FirebaseDatabase.getInstance().getReference();
             //.getReferenceFromUrl("https://pure-coda-174710.firebaseio.com/users");
 
@@ -76,6 +79,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        FirebaseOptions options = null;
+        try {
+            options = FirebaseOptions.builder()
+                    .setCredentials(GoogleCredentials.getApplicationDefault())
+                    .setDatabaseUrl("https://ekolswapp-default-rtdb.europe-west1.firebasedatabase.app/")
+                    .build();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        FirebaseApp.initializeApp(options);
 
 //        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
 //            LocalDate localDatex = LocalDate.now();
@@ -83,12 +97,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //            localDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 //            notifyThis("asd","asdcas");
 //        }
+//        Intent per = new Intent(this, Permission.class);
+//        //Permission per = new Permission();
+////        per.mContext = this;
+//        startActivity(per);
+        requestPermission("bluetooth");
+        requestPermission("location");
 
-        // Open bluetooth
-        if (!BluetoothUtils.isBluetoothEnabled()) {
-            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            startActivityForResult(enableBtIntent, 1);
-        }
+//        // Open bluetooth
+//        if (!BluetoothUtils.isBluetoothEnabled()) {
+//            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+//            startActivityForResult(enableBtIntent, 1);
+//        }
         // Control gps and if not open go to setting panel
         String provider = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
         if(!provider.contains("gps")){ //if gps is disabled
@@ -112,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //Toolbar
         mToolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle("Hospital Appointy");
+        getSupportActionBar().setTitle("Ekol Hospitals");
 
         //DrawerLayout and ToggleButton
         mDrawerLayout = findViewById(R.id.main_drawerLayout);
@@ -520,5 +540,34 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         nm.notify(1, b.build());
     }
 
+    public boolean checkPermission(String type){
+        if(type == "bluetooth" && BluetoothUtils.isBluetoothEnabled()){
+            return true;
+        }else if(type == "location" && ContextCompat.checkSelfPermission(mContext, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    public boolean requestPermission(String type){
+        if (!checkPermission(type)) {
+            if(type == "bluetooth"){
+                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableBtIntent, 1);
+                ActivityCompat.requestPermissions((Activity) mContext, new String[]{android.Manifest.permission.BLUETOOTH_ADMIN}, 1);
+                return true;
+            }else if(type == "location"){
+                String provider = Settings.Secure.getString(getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+                if(!provider.contains("gps")){ //if gps is disabled
+                    Intent intent1 = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                    startActivity(intent1);
+                }
+                ActivityCompat.requestPermissions((Activity) mContext, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+                return true;
+            }
+        }
+        return false;
+    }
 
 }

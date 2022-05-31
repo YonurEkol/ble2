@@ -2,13 +2,13 @@ package com.example.aman.hospitalappointy;
 
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import android.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +16,7 @@ import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
+//import com.google.firebase.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -95,7 +96,7 @@ public class Doctor_ShowAppointmentActivity extends AppCompatActivity {
         FirebaseRecyclerOptions<BookedAppointmentList> firebaseRecyclerOptions = new FirebaseRecyclerOptions.Builder<BookedAppointmentList>()
                 .setQuery(query, BookedAppointmentList.class)
                 .build();
-
+        /* FirebaseRecyclerAdapter ile ilgili hata verdiğinden dolayı kapattım
         FirebaseRecyclerAdapter<BookedAppointmentList, DoctorShowAppointmentVH> firebaseRecyclerAdapter =
                 new FirebaseRecyclerAdapter<BookedAppointmentList, DoctorShowAppointmentVH>(firebaseRecyclerOptions) {
                     @Override
@@ -169,7 +170,7 @@ public class Doctor_ShowAppointmentActivity extends AppCompatActivity {
                     }
                 };
         recyclerView.setAdapter(firebaseRecyclerAdapter);
-        firebaseRecyclerAdapter.startListening();
+        firebaseRecyclerAdapter.startListening();*/
     }
 
     private void alertDialog(final String patientID, final String slot) {

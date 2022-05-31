@@ -5,7 +5,7 @@ import static com.example.aman.hospitalappointy.activity.Oprate.HEART_DETECT_STA
 import static com.example.aman.hospitalappointy.activity.Oprate.LIANSUO_SOS;
 
 import android.content.Context;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -13,6 +13,9 @@ import android.widget.TextView;
 import com.example.aman.hospitalappointy.MainActivity;
 import com.example.aman.hospitalappointy.R;
 import com.example.aman.hospitalappointy.Setting;
+//import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -40,11 +43,17 @@ import com.veepoo.protocol.model.datas.HeartData;
 import com.veepoo.protocol.model.datas.PwdData;
 import com.veepoo.protocol.model.settings.CustomSettingData;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
+
+
+
+
 
 public class Sdk_lib {
     Context mContext;
@@ -56,6 +65,23 @@ public class Sdk_lib {
     private DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference();
     String currnetUID = mAuth.getCurrentUser().getUid().toString();
 
+//silll    FileInputStream serviceAccount;
+//
+//    {
+//        try {
+//            serviceAccount = new FileInputStream("C:\\Users\\yakup.onur\\OneDrive\\Code\\BLE2New\\app\\firebase_admin_service.json");
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+
+//    FirebaseOptions options = FirebaseOptions.builder()
+//            .setCredentials(GoogleCredentials.getApplicationDefault())
+//            .setDatabaseUrl("https://ekolswapp-default-rtdb.europe-west1.firebasedatabase.app/")
+//            .build();
+//
+//    FirebaseApp.initializeApp();
 
     ISocialMsgDataListener socialMsgDataListener = new ISocialMsgDataListener() {
         @Override
@@ -73,6 +99,11 @@ public class Sdk_lib {
 
     public Sdk_lib(Context mContext) {
 
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("message");
+
+        myRef.setValue("Hello, World!");
+//
         mDatabase.child("Patient_Details").child(currnetUID).child("status").setValue("Sdkda Basladi");
 //        FirebaseDatabase.getInstance().getReference().child("Patient_Details").child(FirebaseAuth.getInstance().getCurrentUser().getUid().toString()).child("status").setValue("Sdkda Basladi");
 
@@ -104,7 +135,7 @@ public class Sdk_lib {
                                 String time = ltime.format(DateTimeFormatter.ofPattern("H:m:s"));
                                 mDatabase.child("Patient_Data").child(currnetUID).child("heart_detect").child(date).child(time).setValue(heart.getData());
                             }
-//                            heartStatus.setText(String.valueOf(heart.getData()));
+                            heartStatus.setText(String.valueOf(heart.getData()));
                         }catch(Exception e){
                         }
 //                        heart_status
